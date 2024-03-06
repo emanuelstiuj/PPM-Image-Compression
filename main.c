@@ -9,9 +9,9 @@ typedef struct pixel {
 } pixel;
 
 typedef struct imgNode {
-    // structura unui nod apartinand arborelui
-    // pixel == NULL pentru nodurile interne
-    // topLeft == topRight == bottomRight == bottomLeft == NULL pentru frunze
+    // Structure of a node belonging to the tree
+    // pixel == NULL for internal nodes
+    // topLeft == topRight == bottomRight == bottomLeft == NULL for leaves
     pixel *rgbValues;
     struct imgNode *topLeft;
     struct imgNode *topRight;
@@ -20,10 +20,10 @@ typedef struct imgNode {
     unsigned int depth;
 } imgNode;
 
-/* S-au implementat structurile si functiile pentru coada 
-   cu ajutorul listelor simplu inlantuite. Acestea se utilizeaza la
-   cerinta 2 la parcuregrea pe nivel a arborelui si la cerinta 3 la
-   construirea arborelui in ordinea corecta */
+/* Structures and functions for the queue 
+   using singly linked lists. These are used in
+   task 2 for level order tree traversal and in
+   task 3 for building the tree in the correct order. */
 
 typedef struct queueNode {
     struct queueNode *next;
@@ -47,62 +47,62 @@ Queue* initQueue(void)
 
 int isQueueEmpty(Queue *q)
 {	
-	if (!(q->front)) {
-		return 1;
-	}
-	return 0;
+    if (!(q->front)) {
+        return 1;
+    }
+    return 0;
 }
 
 void enqueue(Queue *q, imgNode *nodeAddress)
 {	
-	queueNode *newNode = malloc(sizeof(queueNode));
-	newNode->nodeAddress = nodeAddress;
-	newNode->next = NULL;
+    queueNode *newNode = malloc(sizeof(queueNode));
+    newNode->nodeAddress = nodeAddress;
+    newNode->next = NULL;
 
-	if (q->front == NULL) {
-		q->rear = newNode;
-		q->front = newNode;
-		q->size++;
-	}
-	else {
-		q->rear->next = newNode;
-		q->rear = newNode;
-		q->size++;
-	}
+    if (q->front == NULL) {
+        q->rear = newNode;
+        q->front = newNode;
+        q->size++;
+    }
+    else {
+        q->rear->next = newNode;
+        q->rear = newNode;
+        q->size++;
+    }
 }
 
 imgNode* dequeue(Queue* q)
 {	
-	queueNode *p = q->front;
-	q->front = q->front->next;
-	q->size--;
+    queueNode *p = q->front;
+    q->front = q->front->next;
+    q->size--;
 
-	imgNode *nodeAddress = p->nodeAddress;
-	free(p);
+    imgNode *nodeAddress = p->nodeAddress;
+    free(p);
 
-	if (!q->front) {
-		q->rear = NULL;
-		q->front = NULL;
-	}
-	return nodeAddress;
+    if (!q->front) {
+        q->rear = NULL;
+        q->front = NULL;
+    }
+    return nodeAddress;
 }
 
 void destroyQueue(Queue *q)
 {	
-	queueNode *p = q->front;
-	queueNode *t = NULL;
+    queueNode *p = q->front;
+    queueNode *t = NULL;
 
-	while (p) {
-		t = p;
-		p = p->next;
-		free(t);
-	}
-	free(q);	
+    while (p) {
+        t = p;
+        p = p->next;
+        free(t);
+    }
+    free(q);	
 }
 
 pixel** mallocPixelMatrix(unsigned int size)
 {
-    // functia aloca memorie pentru matricea de pixeli si returneaza adresa ei
+    // Allocates memory for the pixel matrix and returns its address
     pixel** newMatrix = malloc(size * sizeof(pixel *));
     int i;
     for (i = 0; i < size; i++) {
@@ -113,7 +113,7 @@ pixel** mallocPixelMatrix(unsigned int size)
 
 void freePixelMatrix(pixel **pixelMatrix, unsigned int size)
 {
-    // functia elibereaza memoria pentru o matrice de pixeli
+    // Frees memory for a matrix of pixels
     int i;
     for (i = 0; i < size; i++) {
         free(pixelMatrix[i]);
@@ -123,7 +123,7 @@ void freePixelMatrix(pixel **pixelMatrix, unsigned int size)
 
 void writePixel(pixel *myPixel, FILE *outputFile)
 {
-    // functia scrie in fisier datele unui pixel (red, green, blue)
+    // Writes the pixel data (red, green, blue) to the file
     fwrite(&myPixel->red, 1, 1, outputFile);
     fwrite(&myPixel->green, 1, 1, outputFile);
     fwrite(&myPixel->blue, 1, 1, outputFile);
@@ -131,7 +131,7 @@ void writePixel(pixel *myPixel, FILE *outputFile)
 
 pixel readPixel(FILE *inputFile)
 {
-    // functia citeste intr-o structura 'pixel' datele dintr-un fisier
+    // Reads data from a file into a 'pixel' structure
     pixel newPixel;
     fread(&newPixel.red, 1, 1, inputFile);
     fread(&newPixel.green, 1, 1, inputFile);
@@ -141,8 +141,7 @@ pixel readPixel(FILE *inputFile)
 
 void writeNodeData(imgNode *node, FILE *outputFile)
 {
-    // functia este utilizata la cerinta 2
-    // aceasta scrie in fisier datele unui nod din arbore in functie de tipul acestuia
+    // Used in task 2, writes the data of a tree node to the file based on its type
     unsigned char one = 1, zero = 0;
     if (node->rgbValues) { 
         fwrite(&one, 1, 1, outputFile);
@@ -154,7 +153,7 @@ void writeNodeData(imgNode *node, FILE *outputFile)
 
 void freeTree(imgNode *node)
 {
-    // functia elibeareaza memoria pentru un arbore dat ca parametru
+    // Frees memory for a given tree
     if (!node) {
         return;
     }
@@ -172,10 +171,9 @@ void freeTree(imgNode *node)
 
 void levelOrder(imgNode *node, Queue *myQueue, FILE *outputFile, unsigned int finalSize)
 {
-    // functia este folosita la cerinta 2
-    // se parcurge arborele pe nivel cu ajutorul unei cozi 
-    /* coada va retine adresele nodurilor ale caror date
-    urmeaza sa fie scrise in fisier */
+    // Used in task 2, traverses the tree in level order using a queue 
+    /* the queue will store addresses of nodes whose data
+    is to be written to the file */
 
     unsigned char one = 1;
     unsigned char zero = 0;
@@ -211,8 +209,8 @@ void levelOrder(imgNode *node, Queue *myQueue, FILE *outputFile, unsigned int fi
 
 pixel** readDataFromPPM(FILE *inputFile, unsigned int *size)
 {
-    /* functia citeste datele dintr-un fisier ppm si returneaza
-    matricea de pixeli (imaginea) */
+    /* Reads data from a ppm file and returns
+    the pixel matrix (image) */
 
     int width, height, maxValue;
     char fileFormat[3];
@@ -237,7 +235,7 @@ pixel** readDataFromPPM(FILE *inputFile, unsigned int *size)
 
 int pow2(int exp)
 {
-    // functia calculeaza 2 la puterea unui exponent primit ca parametru
+    // Calculates 2 to the power of a given exponent
     int res = 1;
     int i;
     for (i = 0; i < exp; i++) {
@@ -248,7 +246,7 @@ int pow2(int exp)
 
 int getLog2(int n)
 {
-    // functia calculeaza logaritm in baza 2 dintr-un numar dat ca parametru
+    // Calculates the base 2 logarithm of a given number
     int p = 1;
     while (pow2(p) != n) {
         p++;
@@ -258,8 +256,8 @@ int getLog2(int n)
 
 long long getMean(pixel **myImage, unsigned int x, unsigned int y, unsigned int size, pixel *averagePixel)
 {
-    // functia calculeaza valoarea 'mean' pe o submatrice si urmeaza sa fie returnata
-    // variabila 'averagePixel' retine media culorilor red, green, blue din submatrice
+    // Calculates the 'mean' value for a submatrix and returns it
+    // averagePixel variable stores the average colors (red, green, blue) from the submatrix
     unsigned long long redAverage = 0, greenAverage = 0, blueAverage = 0;
     unsigned int i, j;
     for (i = x; i < x + size; i++) {
@@ -294,7 +292,7 @@ long long getMean(pixel **myImage, unsigned int x, unsigned int y, unsigned int 
 imgNode* recursiveBuild(pixel **myImage, unsigned int size, unsigned int x, unsigned int y, unsigned int factor, unsigned int depth, 
                         unsigned int *maxDepth, unsigned int *numOfLeaves, unsigned int *maxBlockSize)
 {
-    // functia parcurge imaginea (matricea de pixeli) si construieste recursiv arborele
+    // Recursively traverses the image (pixel matrix) and builds the tree
     if (depth < *maxDepth) {
         *maxDepth = depth;
     }
@@ -302,8 +300,8 @@ imgNode* recursiveBuild(pixel **myImage, unsigned int size, unsigned int x, unsi
     imgNode *newNode = NULL;
 
     if (depth == 0) {
-        // cazul in care se size == 1 adica submatricea este un pixel
-        // se creaza un nod in arbore care va fi frunza si se va returna
+        // Case where size == 1, i.e., the submatrix is a pixel
+        // Creates a tree node that will be a leaf and returns it
         *numOfLeaves = *numOfLeaves + 1;
 
         newNode = malloc(sizeof(imgNode));
@@ -317,9 +315,8 @@ imgNode* recursiveBuild(pixel **myImage, unsigned int size, unsigned int x, unsi
 
     pixel *averagePixel = malloc(sizeof(pixel));
     if (getMean(myImage, x, y, size, averagePixel) <= factor) {
-        // cazul in care mean <= factor
-        // se creaza un nou nod in arbore care va fi frunza
-        // acesta va retine media culorilor din submatricea parcursa anterior
+        // Case where mean <= factor
+        // Creates a new leaf node that will store the average colors from the previously traversed submatrix
         if (*maxBlockSize < size) {
             *maxBlockSize = size;
         }
@@ -337,8 +334,8 @@ imgNode* recursiveBuild(pixel **myImage, unsigned int size, unsigned int x, unsi
     newNode = malloc(sizeof(imgNode));
     newNode->rgbValues = NULL;
 
-    /* in cazul in care nu se indeplineste niciuna dintre conditiile de mai sus se va
-    diviza submatricea actuala in alte 4 blocuri, reluandu-se verificarile recursiv */
+    /* If none of the above conditions is met, the current submatrix will be divided into 4 blocks,
+    and the checks will be resumed recursively */
     newNode->topLeft = recursiveBuild(myImage, size / 2, x, y, factor, depth - 1, maxDepth, numOfLeaves, maxBlockSize);
     newNode->topRight = recursiveBuild(myImage, size / 2, x, y + size / 2, factor, depth - 1, maxDepth, numOfLeaves, maxBlockSize);
     newNode->bottomRight = recursiveBuild(myImage, size / 2, x + size / 2, y + size / 2, factor, depth - 1, maxDepth, numOfLeaves, maxBlockSize);
@@ -348,8 +345,8 @@ imgNode* recursiveBuild(pixel **myImage, unsigned int size, unsigned int x, unsi
 
 void initialize(pixel **myImage, unsigned int size, imgNode *node, unsigned int x, unsigned int y)
 {
-    /* functia se va folosi la cerinta 3 la construirea imaginii decomprimate, 
-    parcurgandu-se arborele rezultat in urma citirii fisierului comprimat */
+    /* Used in task 3 for building the decompressed image, 
+    traverses the resulting tree after reading the compressed file */
     if (node == NULL) {
         return;
     }
@@ -369,10 +366,10 @@ void initialize(pixel **myImage, unsigned int size, imgNode *node, unsigned int 
     initialize(myImage, size / 2, node->bottomLeft, x + size / 2, y);
 }
 
-void decomprimare(FILE *inputFile, FILE *outputFile)
+void decompression(FILE *inputFile, FILE *outputFile)
 {
-    /* avand in vedere ca fisierul comprimat retine datele despre arbore in ordinea
-    parcurgerii pe nivel, se va uitiliza o coada in construirea acestuia */
+    /* Since the compressed file stores tree data in level order,
+    a queue will be used in building the tree */
 
     Queue *myQueue = initQueue();
     
@@ -388,18 +385,18 @@ void decomprimare(FILE *inputFile, FILE *outputFile)
     fread(&nodeType, 1, 1, inputFile);
 
     if (nodeType) {
-        // cazul in care radacina este o frunza
+        // Case where the root is a leaf
         myTree->rgbValues = malloc(sizeof(pixel));
         *(myTree->rgbValues) = readPixel(inputFile);
         myTree->topLeft = myTree->topRight = myTree->bottomLeft = myTree->bottomRight = NULL;
         myTree->depth = 1;
     } else {
-        // cazul in care radacina este nod intern
+        // Case where the root is an internal node
         enqueue(myQueue, myTree);
 
         while(!isQueueEmpty(myQueue)) {
-            /* avand in vedere ca in coada se vor retine doar noduri interne se va aloca de fiecare data
-            memorie pentru cei 4 descendenti */
+            /* Since only internal nodes will be stored in the queue, memory will be allocated each time
+            for the 4 descendants */
 
             imgNode *tempNode = dequeue(myQueue);
 
@@ -410,7 +407,7 @@ void decomprimare(FILE *inputFile, FILE *outputFile)
 
             tempNode->topLeft->depth = tempNode->topRight->depth = tempNode->bottomRight->depth = tempNode->bottomLeft->depth = tempNode->depth + 1;
 
-            /* in functie de tipul nodului care este citit din fisier, se vor efectua operatiile necesare in construirea corecta a arborelui*/
+            /* Depending on the type of node read from the file, the necessary operations will be performed in building the tree */
 
             fread(&nodeType, 1, 1, inputFile);
             if (nodeType) {
@@ -418,7 +415,7 @@ void decomprimare(FILE *inputFile, FILE *outputFile)
                 *(tempNode->topLeft->rgbValues) = readPixel(inputFile);
                 tempNode->topLeft->bottomLeft = tempNode->topLeft->bottomRight = tempNode->topLeft->topLeft = tempNode->topLeft->topRight = NULL;
             } else {
-                // se poate observa ca nodurile interne sunt adaugate in coada 
+                // Internal nodes are added to the queue
                 tempNode->topLeft->rgbValues = NULL;
                 enqueue(myQueue, tempNode->topLeft);
             }
@@ -464,7 +461,7 @@ void decomprimare(FILE *inputFile, FILE *outputFile)
     fprintf(outputFile, "%u %u\n", size, size);
     fprintf(outputFile, "%u\n", value);
 
-    // se introduc datele din matricea de pixeli in fisierul output
+    // Writes the pixel matrix data to the output file
     int i, j;
     for (i = 0; i < size; i++) {
         for (j = 0; j < size; j++) {
@@ -480,32 +477,32 @@ void decomprimare(FILE *inputFile, FILE *outputFile)
 int main(int argc, char *argv[])
 {
     if (strcmp(argv[1], "-d") == 0) {
-        // cerinta 3 
+        // Task 3
         FILE *inputFile = fopen(argv[2], "rb");
         FILE *outputFile = fopen(argv[3], "wb");
 
-        decomprimare(inputFile, outputFile);
+        decompression(inputFile, outputFile);
 
         fclose(inputFile);
         fclose(outputFile);
         
     } else if (strcmp(argv[1], "-c1") == 0) {
-        // cerinta 1
+        // Task 1
         unsigned int size;
 
         FILE *inputFile = fopen(argv[3], "rb");
         FILE *outputFile = fopen(argv[4], "w");
         pixel** myImage = readDataFromPPM(inputFile, &size);
 
-        unsigned int depth = getLog2(size); // adancimea maxima a arborelui
+        unsigned int depth = getLog2(size); // Maximum depth of the tree
 
         unsigned int maxDepth = depth;
-        unsigned int numOfLeaves = 0; // numarul de frunze din arbore
-        unsigned int maxBlockSize = 1; // dimensiunea celui mai mare bloc al carui mean <= factor
-        // valorile celor 3 variabile de mai sus se vor modifica pe parcursul functiei de construire a arborelui
+        unsigned int numOfLeaves = 0; // Number of leaves in the tree
+        unsigned int maxBlockSize = 1; // Size of the largest block whose mean <= factor
+        // The values of these 3 variables will change during the tree construction function
 
         imgNode *myTree = recursiveBuild(myImage, size, 0, 0, atoi(argv[2]), depth, &maxDepth, &numOfLeaves, &maxBlockSize);
-        maxDepth = depth - maxDepth + 1; // adancimea arborelui
+        maxDepth = depth - maxDepth + 1; // Depth of the tree
         
         fprintf(outputFile, "%u\n", maxDepth);
         fprintf(outputFile, "%u\n", numOfLeaves);
@@ -517,7 +514,7 @@ int main(int argc, char *argv[])
         fclose(inputFile);
         fclose(outputFile);
     } else {
-        // cerinta 2
+        // Task 2
         unsigned int size;
 
         FILE *inputFile = fopen(argv[3], "rb");
