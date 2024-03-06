@@ -1,5 +1,3 @@
-/* STIUJ Emanuel-Stefan - 311CC */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
